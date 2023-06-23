@@ -22,17 +22,19 @@
                     <h2><strong>{{ product.nama }}</strong></h2>
                     <hr>
                     <h4>Harga : <strong>Rp. {{ product.harga }}</strong></h4>
-                    <form>
+                    <form v-on:submit.prevent>
+                        <!-- .prevent digunakan untuk mencegah reload page (perilaku default) -->
                         <div class="my-3">
                             <label for="jmlPesanan" class="form-label">Jumlah Pesan</label>
-                            <input id="jmlPesanan" type="number" class="form-control">
+                            <input v-model="pesanan.jumlah" id="jmlPesanan" type="number" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="keterangan" class="form-label">Keterangan</label>
-                            <textarea id="keterangan" class="form-control" placeholder="Nasinya setengah saja.."></textarea>
+                            <textarea v-model="pesanan.keterangan" id="keterangan" class="form-control"
+                                placeholder="Nasinya setengah saja.."></textarea>
                         </div>
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-cart-fill"></i> Pesan
+                        <button @click="pesan" type="submit" class="btn btn-success">
+                            <i class="bi bi-cart-fill"></i> Keranjang
                         </button>
                     </form>
                 </div>
@@ -44,6 +46,9 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
+import { useToast } from 'vue-toast-notification';
+
+const $toast = useToast();
 
 export default {
     name: `FoodDetail`,
@@ -52,12 +57,37 @@ export default {
     },
     data() {
         return {
-            product: {}
+            product: {},
+            pesanan: {}
         }
     },
     methods: {
         setProduct(data) {
             this.product = data;
+        },
+        pesan() {
+            if (this.pesanan.jumlah) {
+                this.pesanan.product = this.product;
+                axios
+                    .post("http://localhost:3000/keranjangs", this.pesanan)
+                    .then(() => {
+                        this.$router.push({ path: '/keranjang' });
+                        $toast.success('Sukses masuk keranjang!', {
+                            type: 'success',
+                            position: 'top-right',
+                            duration: 3000,
+                            dismissible: true
+                        });
+                    })
+                    .catch((error) => console.log(error));
+            } else {
+                $toast.error('Jumlah pesanan harus diisi!', {
+                    type: 'error',
+                    position: 'top-right',
+                    duration: 3000,
+                    dismissible: true
+                });
+            }
         }
     },
     mounted() {
