@@ -22,3 +22,8 @@
 .router-link-exact-active {
     font-weight: bold;
 }
+
+.breadcrumb .active {
+    font-weight: bold;
+    color: black;
+}

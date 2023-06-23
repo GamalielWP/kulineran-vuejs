@@ -4,10 +4,10 @@
   <div class="card-body">
     <h5 class="card-title">{{ product.nama }}</h5>
     <p class="card-text">Harga : Rp. {{ product.harga }}</p>
-    <a href="" class="btn btn-success">
+    <router-link :to="'/foods/' + product.id" class="btn btn-success">
       <i class="bi bi-cart-fill"></i>
       Pesan
-    </a>
+    </router-link>
   </div>
 </div>
 </template>
