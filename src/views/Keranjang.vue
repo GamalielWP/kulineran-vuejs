@@ -57,6 +57,25 @@
           </tbody>
         </table>
       </div>
+
+      <div class="row justify-content-end">
+        <div class="col-md-4">
+          <form v-on:submit.prevent>
+            <!-- .prevent digunakan untuk mencegah reload page (perilaku default) -->
+            <div class="my-3">
+              <label for="namaPembeli" class="form-label">Nama Pembeli</label>
+              <input v-model="pesanan.nama" id="namaPembeli" type="text" class="form-control">
+            </div>
+            <div class="my-3">
+              <label for="nomorMeja" class="form-label">Nomor Meja</label>
+              <input v-model="pesanan.meja" id="nomorMeja" type="number" class="form-control">
+            </div>
+            <button @click="checkout" type="submit" class="btn btn-success float-end">
+              <i class="bi bi-cart-fill"></i> Checkout
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -75,12 +94,21 @@ export default {
   },
   data() {
     return {
-      carts: []
+      carts: [],
+      pesanan: {}
     }
   },
   methods: {
     setCarts(data) {
       this.carts = data;
+    },
+    getCarts() {
+      axios
+        .get("http://localhost:3000/keranjangs")
+        .then((response) => {
+          this.setCarts(response.data);
+        })
+        .catch((error) => console.log(error));
     },
     hapusCart(id) {
       axios
@@ -96,13 +124,34 @@ export default {
         })
         .catch((error) => console.log(error));
     },
-    getCarts() {
-      axios
-        .get("http://localhost:3000/keranjangs")
-        .then((response) => {
-          this.setCarts(response.data);
-        })
-        .catch((error) => console.log(error));
+    checkout() {
+      if (this.pesanan.nama && this.pesanan.meja) {
+        this.pesanan.cart = this.carts;
+        axios
+          .post("http://localhost:3000/pesanans", this.pesanan)
+          .then(() => {
+            this.$router.push({ path: '/pesanan-sukses' });
+            $toast.success('Sukses dipesan!', {
+              type: 'success',
+              position: 'top-right',
+              duration: 3000,
+              dismissible: true
+            });
+            this.carts.map((cart) => {
+              axios
+                .delete("http://localhost:3000/keranjangs/" + cart.id)
+                .catch((error) => console.log(error));
+            });
+          })
+          .catch((error) => console.log(error));
+      } else {
+        $toast.error('Nama & nomor meja harus diisi!', {
+          type: 'error',
+          position: 'top-right',
+          duration: 3000,
+          dismissible: true
+        });
+      }
     }
   },
   mounted() {
