@@ -21,7 +21,7 @@
                         <router-link class="nav-link" to="/keranjang">
                             Keranjang
                             <i class="bi bi-handbag me-1"></i>
-                            <span class="badge bg-success">{{ jumlah_pesanan.length }}</span>
+                            <span class="badge bg-success">{{ updatedCart ? updatedCart.length : jumlah_pesanan.length }}</span>
                         </router-link>
                     </li>
                 </ul>
@@ -35,6 +35,7 @@ import axios from "axios";
 
 export default {
     name: `Navbar`,
+    props: ['updatedCart'],
     data() {
         return {
             jumlah_pesanan: []
