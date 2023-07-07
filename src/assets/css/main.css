@@ -31,3 +31,7 @@
 .cursor-pointer {
     cursor: pointer;
 }
+
+.text-success {
+    color: #18b164 !important;
+}

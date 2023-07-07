@@ -127,6 +127,7 @@ export default {
     checkout() {
       if (this.pesanan.nama && this.pesanan.meja) {
         this.pesanan.cart = this.carts;
+        this.pesanan.station = 'table';
         axios
           .post("http://localhost:3000/pesanans", this.pesanan)
           .then(() => {
